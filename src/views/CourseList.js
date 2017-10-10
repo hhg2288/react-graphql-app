@@ -60,7 +60,6 @@ class CourseListComponent extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.selectedCourse);
   return {
     courses: state.courses,
   }

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "concurrently \"npm run server\" \"react-scripts start\"",
-    "server": "json-server server/api/db.json --watch",
+    "server": "json-server server/api/db.json --watch --port 3004",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "flow": "flow",
