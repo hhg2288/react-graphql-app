@@ -1,18 +1,15 @@
 // @flow
 
-import {request} from 'graphql-request';
+import axios from 'axios';
 
-import {GraphURL} from './constants';
-import {AllCoursesQuery, CreateCourseMutation, UpdateCourseMutation, DeleteCourseMutation} from './coursesGql';
+import { ApiUrl } from './constants';
 
 export function loadCourses() {
-  return (dispatch : Function) => {
-    request(GraphURL, AllCoursesQuery).then((data) => {
-      data
-        .allCourses
-        .forEach((course) => {
-          dispatch({type: 'ADD_COURSE', payload: course})
-        })
+  return (dispatch: Function) => {
+    axios(`${ApiUrl}/courses`).then(result => {
+      result.data.forEach(course => {
+        dispatch({ type: 'ADD_COURSE', payload: course });
+      });
     });
   };
 }
@@ -20,27 +17,27 @@ export function loadCourses() {
 // Delete a course by `courseId`
 //
 // Dispatches REMOVE_COURSE to remove the course from the store
-export function deleteCourse(courseId : number) {
-  return (dispatch : Function) => {
-    request(GraphURL, DeleteCourseMutation, {id: courseId}).then((data) => {
+export function deleteCourse(courseId: number) {
+  return (dispatch: Function) => {
+    axios.delete(`${ApiUrl}/courses/${courseId}`).then(result => {
       dispatch({
         type: 'REMOVE_COURSE',
         payload: {
           id: courseId
         }
       });
-    })
+    });
   };
 }
 
 // Create a course
 //
 // Dispatches `loadCourses` to reload the course list
-export function createCourse(course : object) {
-  return (dispatch : Function) => {
-    request(GraphURL, CreateCourseMutation, course).then((data) => {
+export function createCourse(course: object) {
+  return (dispatch: Function) => {
+    axios.post(`${ApiUrl}/courses`, course).then(result => {
       dispatch(loadCourses());
-    })
+    });
   };
 }
 
@@ -49,26 +46,26 @@ export function createCourse(course : object) {
 // Dispatches `deselectCourse` immediately to clear the selection.
 //
 // On complete, dispatches `loadCourses` to reload the course list.
-export function updateCourse(course : object) {
-  return (dispatch : Function) => {
+export function updateCourse(course: object) {
+  return (dispatch: Function) => {
     dispatch(deselectCourse());
 
-    request(GraphURL, UpdateCourseMutation, course).then((data) => {
+    axios.put(`${ApiUrl}/courses/${course.id}`, course).then(result => {
       dispatch(loadCourses());
-    })
+    });
   };
 }
 
 // Selects a course by `id`
 //
 // Dispatches `SET_SELECTED_COURSE` with `id` as the payload
-export function selectCourse(id : number) {
-  return {type: 'SET_SELECTED_COURSE', payload: id};
+export function selectCourse(id: number) {
+  return { type: 'SET_SELECTED_COURSE', payload: id };
 }
 
 // Deselects the course
 //
 // Dispatches `REMOVE_SELECTED_COURSE` with `id` as the payload
 export function deselectCourse() {
-  return {type: 'REMOVE_SELECTED_COURSE'};
+  return { type: 'REMOVE_SELECTED_COURSE' };
 }
